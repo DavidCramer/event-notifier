@@ -82,11 +82,11 @@ class Event_Notifier {
 			$message[] = esc_html__( 'An Event Hook is required.', 'event-notifier' );
 		}
 
-		if ( empty( $data['general']['email'] ) ) {
-			$message[] = esc_html__( 'An Email Address is required.', 'event-notifier' );
+		if ( empty( $data['general']['email'] ) || ! is_email( $data['general']['email'] ) ) {
+			$message[] = esc_html__( 'A valid Email Address is required.', 'event-notifier' );
 		}
 
-		if ( !empty( $message ) ) {
+		if ( ! empty( $message ) ) {
 			wp_send_json_error( implode( '<br>', $message ) );
 		}
 
@@ -114,7 +114,7 @@ class Event_Notifier {
 		$structure = array(
 			'page_title' => __( 'Event Notifier Admin', 'event-notifier' ),
 			'menu_title' => __( 'Event Notifier', 'event-notifier' ),
-			'base_color' => '#F4511E',
+			'base_color' => '#D81B60',
 			'parent'     => 'tools.php',
 			'attributes' => array(
 				'data-autosave' => true,

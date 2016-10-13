@@ -50,3 +50,9 @@
 .evenote-modal-footer .evenote-control-toggle {
     float: left;
 }
+.notifier-status-active {
+    box-shadow: -3px 0 0 0 #fff, -4px 0 0 0 #8bc34a;
+}
+.notifier-status-inactive {
+    box-shadow: -3px 0 0 0 #fff, -4px 0 0 0 #d32f2f;
+}
