@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: Event Notifier
  * Plugin URI:  http://cramer.co.za
- * Description: Sends an email with details of events as they happen
+ * Description: Send notifications when WordPress hooks are fired.
  * Version:     1.0.0
  * Author:      David Cramer
  * Author URI:  http://cramer.co.za
