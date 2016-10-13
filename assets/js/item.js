@@ -132,6 +132,7 @@ var evenote_item_control_modal, evenote_item_control_modal_handler;
                         item.appendTo( holder );
                     }
                 }
+                holder.removeClass('processing');
             });
         });
     });

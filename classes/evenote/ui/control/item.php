@@ -140,6 +140,7 @@ class item extends \evenote\ui\control {
 		$this->assets['script']['item']          = array(
 			'src' => $this->url . 'assets/js/item' . EVENT_NOTIFY_ASSET_DEBUG . '.js',
 		);
+		$this->assets['style']['item'] = $this->url . 'assets/css/item' . EVENT_NOTIFY_ASSET_DEBUG . '.css';
 		parent::set_assets();
 	}
 
@@ -173,7 +174,7 @@ class item extends \evenote\ui\control {
 
 		$output = $this->child['config']->render();
 
-		$output .= '<div id="' . esc_attr( $this->id() ) . '" data-color="' . esc_attr( $this->base_color() ) . '" data-for="' . esc_attr( $this->id() ) . '-control" class="evenote-control evenote-control-' . esc_attr( $this->type ) . ' ' . esc_attr( $this->id() ) . '">';
+		$output .= '<div id="' . esc_attr( $this->id() ) . '" data-color="' . esc_attr( $this->base_color() ) . '" data-for="' . esc_attr( $this->id() ) . '-control" class="processing evenote-control evenote-control-' . esc_attr( $this->type ) . ' ' . esc_attr( $this->id() ) . '">';
 		$output .= '</div>';
 		$output .= $this->input();
 
@@ -268,6 +269,8 @@ class item extends \evenote\ui\control {
 		echo '.' . $this->id() . ' .dashicons.dashicons-plus-alt{ color: ' . $this->base_color() . ' !important;}';
 		echo '.' . $this->id() . ' .column-handle{background-color: ' . $this->base_color() . ' !important;}';
 		echo '.' . $this->id() . ' .evenote-component-toolbar{background-color: ' . $this->base_color() . ' !important;}';
+		echo '.' . $this->id() . ' .evenote-component-toolbar{background-color: ' . $this->base_color() . ' !important;}';
+		echo '.' . $this->id() . '.processing:after {background: url(' . $this->url . 'assets/svg/loading.php?base_color=' . urlencode( str_replace( '#', '', $this->base_color() ) ) . ') no-repeat center center;}';
 		echo '</style>';
 
 	}
