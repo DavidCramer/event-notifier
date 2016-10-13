@@ -237,8 +237,10 @@ class Event_Notifier {
 
 		$data   = $this->admin_page->load_data();
 		$config = json_decode( $data['event']['config'], ARRAY_A );
-		foreach ( $config as $event ) {
-			$this->register_notification( $event );
+		if ( ! empty( $config ) ) {
+			foreach ( $config as $event ) {
+				$this->register_notification( $event );
+			}
 		}
 	}
 
