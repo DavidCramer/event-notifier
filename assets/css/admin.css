@@ -14,19 +14,20 @@
     position: relative;
     height: 230px
 }
-.evenote-item-edit.button.button-small {
-    bottom: 6px;
+.evenote-item-edit.page-title-action:active,
+.evenote-item-edit.page-title-action {
+    bottom: 3px;
     position: absolute;
-    right: 6px
+    right: 3px;
+    top: inherit;
 }
-
 .evenote-item-remove {
-    bottom: 7px;
+    bottom: 8px;
     color: #cf0000;
     cursor: pointer;
     font-size: 11px;
     left: 8px;
-    position: absolute
+    position: absolute;
 }
 .evenote-item-remove:hover {
     text-decoration: underline
@@ -41,4 +42,7 @@
 .def-row {
     border-bottom: 1px solid #e2e2e2;
     margin: 0 0 6px
+}
+.evenote-section-content .page-title-action {
+    margin-top: 8px;
 }

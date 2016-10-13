@@ -11,7 +11,6 @@
  */
 class Event_Notifier {
 
-
 	/**
 	 * Holds instance of the class
 	 *
@@ -128,7 +127,7 @@ class Event_Notifier {
 					'id'     => 'config',
 					'type'   => 'item',
 					'config' => array(
-						'label'       => __( 'Add Event', 'event-notifier' ),
+						'label'       => __( 'Create New Notifier', 'event-notifier' ),
 						'description' => __( 'Configure Event Notification', 'event-notifier' ),
 						'width'       => 400,
 						'height'      => 480,

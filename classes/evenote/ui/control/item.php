@@ -51,6 +51,7 @@ class item extends \evenote\ui\control {
 				'description' => __( 'Setup Item', 'evenote' ),
 				'callback'    => 'wp_send_json_success',
 				'attributes'  => array(
+					'class' => 'page-title-action',
 					'data-content' => 'evenote_item_control_modal',
 				),
 				'height'      => 540,

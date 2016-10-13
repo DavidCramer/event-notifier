@@ -24,4 +24,4 @@
 </div>
 
 <span class="evenote-item-remove" data-confirm="<?php echo esc_attr__( 'Are you sure you want to remove this item?', 'event-notifier' ); ?>"><?php esc_html_e( 'Delete Event', 'event-notifier' ); ?></span>
-<button type="button" class="evenote-item-edit button button-small"><?php esc_html_e( 'Edit Event', 'event-notifier' ); ?></button>
+<button type="button" class="evenote-item-edit page-title-action"><?php esc_html_e( 'Edit Event', 'event-notifier' ); ?></button>
