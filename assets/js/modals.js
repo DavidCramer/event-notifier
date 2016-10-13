@@ -476,7 +476,6 @@
                 evenoteModals[ modalId ].data = obj.rawData.data;
                 if ( typeof obj.rawData === 'object' ) {
                     if( obj.rawData.success ) {
-                        $( document ).trigger('evenote.save');
                         if( typeof obj.rawData.data === 'string' ){
                             obj.rawData = obj.rawData.data;
                         }else if( typeof obj.rawData.data === 'object' ){

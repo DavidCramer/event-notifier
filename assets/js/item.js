@@ -75,6 +75,7 @@ var evenote_item_control_modal, evenote_item_control_modal_handler;
                 }
             input.val( JSON.stringify( configs ) );
         }
+        $( document ).trigger('evenote.save');
     }
 
     $( document ).on( 'click', '.evenote-item-edit', function( ){
