@@ -3,7 +3,7 @@
     min-height: 70px;
     position: relative;
 }
-.evenote-control-item:after {
+.evenote-control-item.processing:after {
     content: " ";
     position: absolute;
     top: 50%;
@@ -16,7 +16,7 @@
     visibility: hidden;
 
 }
-.evenote-control-item:after {
+.evenote-control-item.processing:after {
     opacity: 1;
     visibility: visible;
 }

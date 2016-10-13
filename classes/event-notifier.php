@@ -274,11 +274,8 @@ class Event_Notifier {
 	public function __call( $name, $arguments ) {
 
 		//create a var_dump of the arguments passed.
-		// having xdebug helps alot here.
 		ob_start();
-		echo '<pre>';
 		var_dump( $arguments );
-		echo '</pre>';
 		$details = ob_get_clean();
 
 		foreach ( $this->events[ $name ] as $event ) {
