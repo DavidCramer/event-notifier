@@ -23,5 +23,5 @@
 	{{#if general/enable}}<strong style="color:#8bc34a;"><?php echo esc_html__( 'Active', 'event-notifier' ); ?></strong>{{else}}<strong style="color:#b71c1c;"><?php echo esc_html__( 'Inactive', 'event-notifier' ); ?></strong>{{/if}}
 </div>
 
-<span class="evenote-item-remove" data-confirm="<?php echo esc_attr__( 'Are you sure you want to remove this item?', 'event-notifier' ); ?>"><?php esc_html_e( 'Delete Event', 'event-notifier' ); ?></span>
-<button type="button" class="evenote-item-edit page-title-action"><?php esc_html_e( 'Edit Event', 'event-notifier' ); ?></button>
+<span class="evenote-item-remove" data-confirm="<?php echo esc_attr__( 'Are you sure you want to remove this notifier?', 'event-notifier' ); ?>"><?php esc_html_e( 'Delete Notifier', 'event-notifier' ); ?></span>
+<button type="button" class="evenote-item-edit page-title-action"><?php esc_html_e( 'Edit Notifier', 'event-notifier' ); ?></button>

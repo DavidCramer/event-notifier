@@ -47,6 +47,8 @@ class Event_Notifier {
 		add_action( 'plugins_loaded', array( $this, 'register_admin' ) );
 		// setup notifications
 		add_action( 'init', array( $this, 'setup' ) );
+		// add required fields check
+		add_action( 'evenote_control_item_submit_config', array( $this, 'verify_config' ) );
 	}
 
 	/**
@@ -64,6 +66,30 @@ class Event_Notifier {
 		}
 
 		return self::$instance;
+
+	}
+
+	/**
+	 * Verifies required fields are entered when adding an event notifier
+	 *
+	 * @since 1.0.0
+	 *
+	 */
+	public function verify_config( $data ) {
+
+		$message = array();
+		if ( empty( $data['general']['event'] ) ) {
+			$message[] = esc_html__( 'An Event Hook is required.', 'event-notifier' );
+		}
+
+		if ( empty( $data['general']['email'] ) ) {
+			$message[] = esc_html__( 'An Email Address is required.', 'event-notifier' );
+		}
+
+		if ( !empty( $message ) ) {
+			wp_send_json_error( implode( '<br>', $message ) );
+		}
+
 
 	}
 
@@ -88,7 +114,7 @@ class Event_Notifier {
 		$structure = array(
 			'page_title' => __( 'Event Notifier Admin', 'event-notifier' ),
 			'menu_title' => __( 'Event Notifier', 'event-notifier' ),
-			'base_color' => '#175a84',
+			'base_color' => '#F4511E',
 			'parent'     => 'tools.php',
 			'attributes' => array(
 				'data-autosave' => true,
@@ -138,7 +164,7 @@ class Event_Notifier {
 								'label'   => __( 'General', 'event-notifier' ),
 								'control' => array(
 									'event'  => array(
-										'label'       => __( 'Hook Name', 'event-notifier' ),
+										'label'       => __( 'Event Hook', 'event-notifier' ),
 										'description' => __( 'The name of the filter / action to be notified of', 'event-notifier' ),
 										'type'        => 'text',
 									),
@@ -148,9 +174,9 @@ class Event_Notifier {
 										'type'        => 'text',
 									),
 									'enable' => array(
-										'label'       => __( 'Active Notification', 'event-notifier' ),
-										'description' => __( 'Is this event notification active', 'event-notifier' ),
+										'label'       => __( 'Notifier Status', 'event-notifier' ),
 										'type'        => 'toggle',
+										'off_icon'     => 'dashicons-no',
 									),
 								),
 							),
@@ -169,6 +195,27 @@ class Event_Notifier {
 										'type'        => 'textarea',
 										'rows'        => 6,
 										'value'       => __( 'Event Notification Details: {{details}}', 'event-notifier' ),
+									),
+								),
+							),
+						),
+						'footer'      => array(
+							'id'      => 'status',
+							'control' => array(
+								'add_item' => array(
+									'label'      => __( 'Create Notifier', 'evenote' ),
+									'type'       => 'button',
+									'attributes' => array(
+										'type' => 'submit',
+										'data-state' => 'add',
+									),
+								),
+								'update_item' => array(
+									'label'      => __( 'Update Notifier', 'evenote' ),
+									'type'       => 'button',
+									'attributes' => array(
+										'type' => 'submit',
+										'data-state' => 'update',
 									),
 								),
 							),
@@ -203,9 +250,10 @@ class Event_Notifier {
 	 * @param array $event The event config to register
 	 */
 	public function register_notification( $event ) {
-		if ( empty( $event['general']['event'] ) ) {
+		if ( empty( $event['general']['event'] ) || empty( $event['general']['enable'] ) ) {
 			return; // no event hook
 		}
+
 		// add to active events
 		$this->events[ $event['general']['event'] ][] = $event;
 

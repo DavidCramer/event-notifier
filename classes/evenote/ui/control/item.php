@@ -93,7 +93,7 @@ class item extends \evenote\ui\control {
 		$this->struct['modal']['config']['view'] = $this->struct['modal']['config']['template'];
 		unset( $this->struct['modal']['config']['template'] );
 
-		add_action( 'evenote_control_item_submit_' . $this->slug, $this->struct['modal']['config']['callback'] );
+		add_action( 'evenote_control_item_submit_' . $this->slug, $this->struct['modal']['config']['callback'], 100 );
 		parent::setup();
 		$this->handle_submit();
 
