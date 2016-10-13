@@ -1,0 +1,60 @@
+.evenote-sections {
+  width: 100%;
+}
+.evenote-has-tabs > .evenote-sections{
+  border-left: 1px solid #eee;
+  float: left;
+  margin-left: -1px; 
+  width: calc(100% - 181px);
+}
+.evenote-has-tabs.evenote-top-tabs > .evenote-sections{
+  float: none;
+  width: 100%;
+  border: none;
+}
+#side-sortables .evenote-sections{
+    float: none;
+    width: 100%;
+    border: none;
+}
+.evenote-has-tabs .evenote-section {
+  display: none;
+}
+.evenote-has-tabs .evenote-section[aria-hidden="false"] {
+  display: block;
+}
+.evenote-section > h3 {
+
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.evenote-has-tabs .evenote-section-content{
+    padding: 8px 12px 8px;
+}
+
+.evenote-section > .evenote-section-content > .evenote-control {
+  margin-bottom: 21px;
+}
+.evenote-section > .evenote-section-content > .evenote-control-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.evenote-section > .evenote-section-content > .evenote-control-description {
+  color: #808080;
+  display: block;
+  font-style: oblique;
+  font-weight: 400;
+  margin-bottom: 3px;
+}
+
+
+
+@media only screen and ( max-width: 782px ), ( max-width: 980px ) and ( min-width: 851px ) {
+    .evenote-has-tabs .evenote-sections {
+      width: calc(100% - 48px);
+    }
+}

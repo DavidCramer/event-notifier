@@ -1,0 +1,44 @@
+.evenote-control-item {
+    border-top: 1px solid #cfcfcf;
+    margin: 12px 0 0;
+    padding-top: 12px
+}
+.evenote-item {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #ddd;
+    box-shadow: 0 -36px 0 rgba(0, 0, 0, .06) inset;
+    float: left;
+    margin: 0 6px 6px 0;
+    padding: 6px;
+    width: 200px;
+    position: relative;
+    height: 230px
+}
+.evenote-item-edit.button.button-small {
+    bottom: 6px;
+    position: absolute;
+    right: 6px
+}
+
+.evenote-item-remove {
+    bottom: 7px;
+    color: #cf0000;
+    cursor: pointer;
+    font-size: 11px;
+    left: 8px;
+    position: absolute
+}
+.evenote-item-remove:hover {
+    text-decoration: underline
+}
+.evenote-item > h4 {
+    margin: 0 0 6px;
+    padding: 0 0 6px
+}
+.evenote-item label {
+    font-weight: 600
+}
+.def-row {
+    border-bottom: 1px solid #e2e2e2;
+    margin: 0 0 6px
+}
