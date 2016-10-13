@@ -1,5 +1,5 @@
 <?php
-// If this file is called directly, abort.
+// only do stuff if not called directly.
 if ( defined( 'WPINC' ) ) {
 
 	if ( ! defined( 'EVENT_NOTIFY_ASSET_DEBUG' ) ) {
