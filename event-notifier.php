@@ -30,7 +30,17 @@ define( 'EVENT_NOTIFY_CORE', __FILE__ );
 define( 'EVENT_NOTIFY_URL', plugin_dir_url( __FILE__ ) );
 define( 'EVENT_NOTIFY_VER', '1.0.0' );
 
-include_once EVENT_NOTIFY_PATH . 'evenote-bootstrap.php';
-include_once EVENT_NOTIFY_PATH . 'classes/event-notifier.php';
+if ( ! version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
+	if ( is_admin() ) {
+		add_action( 'admin_notices', 'evenote_php_ver' );
+	}
+}else{
+	//Includes and run
+	include_once EVENT_NOTIFY_PATH . 'evenote-bootstrap.php';
+	include_once EVENT_NOTIFY_PATH . 'classes/event-notifier.php';
+}
 
-Event_Notifier::init();
+function evenote_php_ver() {
+	$message = __( 'Event Notifier requires PHP version 5.3 or later. We strongly recommend PHP 5.5 or later for security and performance reasons.', 'event-notifier' );
+	echo '<div id="evenote_error" class="error notice notice-error"><p>' . $message . '</p></div>';
+}

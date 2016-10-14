@@ -345,3 +345,5 @@ class Event_Notifier {
 
 	}
 }
+// init
+Event_Notifier::init();
