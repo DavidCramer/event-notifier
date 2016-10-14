@@ -1,6 +1,6 @@
 === Event Notifier ===
 Contributors: Desertsnowman
-Tags: event, hooks, notification, event notifications
+Tags: event, hooks, notification, event notifications, slack notifications, slack
 Requires at least: 4.6.0
 Tested up to: 4.6.1
 Stable tag: 1.0.0
@@ -10,12 +10,14 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Send notifications when WordPress hooks are fired.
 
 == Description ==
- Event Notifier is a diagnostic tool, aimed at providing email notifications when WordPress hooks / event occur. It was created out of the need to be notified when \"fail\" hooks are triggered, thereby informing us of the event.
+Event Notifier is a diagnostic tool, aimed at providing notifications when WordPress hooks / event occur. It was created out of the need to be notified when "fail" hooks are triggered, thereby informing us of the event.
+
+Currently it supports Email and Slack notifications. Hopefully I'll add more as I get time.
 
 Since certain hooks fire frequently, the amount of notifications can be significant. So, be sure to only setup events on the exact hook that is needed.
-Pro Tip!
 
 If you are a developer, implement your own hooks in your plugins so that you can fire off events for specific notifications.
+
 
 == Installation ==
 1. Activate the plugin
