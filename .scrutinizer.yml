@@ -4,6 +4,7 @@ filter:
     excluded_paths:
         - 'assets/*'
         - 'classes/evenote/*'
+        - 'includes/functions.php'
 checks:
     php:
         code_rating: true
