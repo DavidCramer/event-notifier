@@ -3,6 +3,7 @@ tools:
 filter:
     excluded_paths:
         - 'assets/*'
+        - 'classes/evenote/*'
 checks:
     php:
         code_rating: true
