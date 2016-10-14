@@ -60,7 +60,7 @@ class item extends \evenote\ui\control {
 					'target'        => 'evenote_item_control_modal_handler',
 					'control'       => $this->id(),
 				),
-				'template'    => '{{json this}} <button type="button" class="evenote-item-edit button button-small">' . esc_html__( 'Edit', 'evenote' ) . '</button>',
+				'template'    => '{{json this}} <button type="button" class="evenote-item-edit button button-small">' . esc_html__( 'Edit', 'evenote' ) . '</button> | <button type="button" class="evenote-item-remove button button-small">' . esc_html__( 'Remove', 'evenote' ) . '</button>',
 				'footer'      => array(
 					'id'      => $this->slug . '_foot',
 					'control' => array(
@@ -129,7 +129,7 @@ class item extends \evenote\ui\control {
 	 */
 	public function set_assets() {
 
-
+		$this->assets['style']['item'] = $this->url . 'assets/css/item' . EVENT_NOTIFY_ASSET_DEBUG . '.css';
 		$this->assets['script']['handlebars']          = array(
 			'src' => $this->url . 'assets/js/handlebars-latest' . EVENT_NOTIFY_ASSET_DEBUG . '.js',
 		);
@@ -140,7 +140,6 @@ class item extends \evenote\ui\control {
 		$this->assets['script']['item']          = array(
 			'src' => $this->url . 'assets/js/item' . EVENT_NOTIFY_ASSET_DEBUG . '.js',
 		);
-		$this->assets['style']['item'] = $this->url . 'assets/css/item' . EVENT_NOTIFY_ASSET_DEBUG . '.css';
 		parent::set_assets();
 	}
 
@@ -268,7 +267,6 @@ class item extends \evenote\ui\control {
 		echo '<style type="text/css">';
 		echo '.' . $this->id() . ' .dashicons.dashicons-plus-alt{ color: ' . $this->base_color() . ' !important;}';
 		echo '.' . $this->id() . ' .column-handle{background-color: ' . $this->base_color() . ' !important;}';
-		echo '.' . $this->id() . ' .evenote-component-toolbar{background-color: ' . $this->base_color() . ' !important;}';
 		echo '.' . $this->id() . ' .evenote-component-toolbar{background-color: ' . $this->base_color() . ' !important;}';
 		echo '.' . $this->id() . '.processing:after {background: url(' . $this->url . 'assets/svg/loading.php?base_color=' . urlencode( str_replace( '#', '', $this->base_color() ) ) . ') no-repeat center center;}';
 		echo '</style>';

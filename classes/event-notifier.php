@@ -78,12 +78,21 @@ class Event_Notifier {
 	public function verify_config( $data ) {
 
 		$message = array();
+		// check if a hook is set.
 		if ( empty( $data['general']['event'] ) ) {
 			$message[] = esc_html__( 'An Event Hook is required.', 'event-notifier' );
 		}
-
-		if ( empty( $data['general']['email'] ) || ! is_email( $data['general']['email'] ) ) {
-			$message[] = esc_html__( 'A valid Email Address is required.', 'event-notifier' );
+		// check email enabled and has address
+		if ( ! empty( $data['notice']['enable'] ) ) {
+			if ( empty( $data['notice']['email'] ) || ! is_email( $data['notice']['email'] ) ) {
+				$message[] = esc_html__( 'A Valid Email address is required.', 'event-notifier' );
+			}
+		}
+		// check slack enabled and has url
+		if ( ! empty( $data['slack']['enable'] ) ) {
+			if ( empty( $data['slack']['url'] ) || ! filter_var( $data['slack']['url'], FILTER_VALIDATE_URL ) ) {
+				$message[] = esc_html__( 'A Valid Webhook URL is required.', 'event-notifier' );
+			}
 		}
 
 		if ( ! empty( $message ) ) {
@@ -116,6 +125,7 @@ class Event_Notifier {
 			'menu_title' => __( 'Event Notifier', 'event-notifier' ),
 			'base_color' => '#D81B60',
 			'parent'     => 'tools.php',
+			'full_width' => true,
 			'attributes' => array(
 				'data-autosave' => true,
 			),
@@ -133,7 +143,7 @@ class Event_Notifier {
 					'label'       => __( 'About', 'event-notifier' ),
 					'description' => __( 'About Event Notifier', 'event-notifier' ),
 					'width'       => 450,
-					'height'       => 570,
+					'height'      => 570,
 					'attributes'  => array(
 						'class' => 'page-title-action',
 					),
@@ -155,58 +165,23 @@ class Event_Notifier {
 					'config' => array(
 						'label'       => __( 'Create New Notifier', 'event-notifier' ),
 						'description' => __( 'Configure Event Notification', 'event-notifier' ),
-						'width'       => 400,
-						'height'      => 480,
+						'width'       => 500,
+						'height'      => 580,
 						'template'    => EVENT_NOTIFY_PATH . 'includes/admin-template.php',
 						'top_tabs'    => true,
 						'section'     => array(
-							'general' => array(
-								'label'   => __( 'General', 'event-notifier' ),
-								'control' => array(
-									'event'  => array(
-										'label'       => __( 'Event Hook', 'event-notifier' ),
-										'description' => __( 'The name of the filter / action to be notified of', 'event-notifier' ),
-										'type'        => 'text',
-									),
-									'email'  => array(
-										'label'       => __( 'Email Address', 'event-notifier' ),
-										'description' => __( 'The email address of to send details to.', 'event-notifier' ),
-										'type'        => 'text',
-									),
-									'enable' => array(
-										'label'       => __( 'Notifier Status', 'event-notifier' ),
-										'type'        => 'toggle',
-										'off_icon'     => 'dashicons-no',
-									),
-								),
-							),
-							'notice'  => array(
-								'label'   => __( 'Notification', 'event-notifier' ),
-								'control' => array(
-									'subject' => array(
-										'label'       => __( 'Email Subject', 'event-notifier' ),
-										'description' => __( 'The subject of the notification email.', 'event-notifier' ),
-										'type'        => 'text',
-										'value'       => __( 'Event Notification', 'event-notifier' ),
-									),
-									'message' => array(
-										'label'       => __( 'Email Message', 'event-notifier' ),
-										'description' => __( 'Content of the notification.', 'event-notifier' ),
-										'type'        => 'textarea',
-										'rows'        => 6,
-										'value'       => __( 'Event Notification Details: {{details}}', 'event-notifier' ),
-									),
-								),
-							),
+							'general' => include EVENT_NOTIFY_PATH . 'includes/general-config.php',
+							'notice'  => include EVENT_NOTIFY_PATH . 'includes/email-config.php',
+							'slack'   => include EVENT_NOTIFY_PATH . 'includes/slack-config.php',
 						),
 						'footer'      => array(
 							'id'      => 'status',
 							'control' => array(
-								'add_item' => array(
+								'add_item'    => array(
 									'label'      => __( 'Create Notifier', 'evenote' ),
 									'type'       => 'button',
 									'attributes' => array(
-										'type' => 'submit',
+										'type'       => 'submit',
 										'data-state' => 'add',
 									),
 								),
@@ -214,7 +189,7 @@ class Event_Notifier {
 									'label'      => __( 'Update Notifier', 'evenote' ),
 									'type'       => 'button',
 									'attributes' => array(
-										'type' => 'submit',
+										'type'       => 'submit',
 										'data-state' => 'update',
 									),
 								),
@@ -252,7 +227,7 @@ class Event_Notifier {
 	 * @param array $event The event config to register
 	 */
 	public function register_notification( $event ) {
-		if ( empty( $event['general']['event'] ) || empty( $event['general']['enable'] ) ) {
+		if ( empty( $event['general']['event'] ) ) {
 			return; // no event hook
 		}
 
@@ -273,14 +248,100 @@ class Event_Notifier {
 	 */
 	public function __call( $name, $arguments ) {
 
+		foreach ( $this->events[ $name ] as $event ) {
+			if ( ! empty( $event['notice']['email'] ) && ! empty( $event['notice']['enable'] ) ) {
+				$this->do_email( $event, $arguments );
+			}
+			if ( ! empty( $event['slack']['url'] ) && ! empty( $event['slack']['enable'] ) ) {
+				$this->do_slack( $event, $arguments );
+			}
+		}
+	}
+
+	/**
+	 * process email notification
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $event The event config
+	 * @param array $arguments the event message will use
+	 */
+	public function do_email( $event, $arguments ) {
+		if ( empty( $event['notice']['subject'] ) ) {
+			$event['notice']['subject'] = __( 'Event Notifier', 'event-notifier' );
+		}
+		if ( empty( $event['notice']['message'] ) ) {
+			$event['notice']['message'] = '{{details}}';
+		}
 		//create a var_dump of the arguments passed.
 		ob_start();
 		var_dump( $arguments );
-		$details = ob_get_clean();
+		$message = str_replace( '{{details}}', ob_get_clean(), $event['notice']['message'] );
+		wp_mail( $event['notice']['email'], $event['notice']['subject'], $message );
 
-		foreach ( $this->events[ $name ] as $event ) {
-			$message = str_replace( '{{details}}', $details, $event['notice']['message'] );
-			wp_mail( $event['general']['email'], $event['notice']['subject'], $message );
+	}
+
+	/**
+	 * process slack notification
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $event The event config
+	 * @param array $arguments the event message will use
+	 */
+	public function do_slack( $event, $arguments ) {
+
+		$payload = array(
+			'text' => $event['general']['event'],
+		);
+
+		if ( ! empty( $event['slack']['name'] ) ) {
+			$payload['username'] = $event['slack']['name'];
 		}
+
+		if ( ! empty( $event['slack']['icon'] ) ) {
+			$payload['icon_url'] = $event['slack']['icon'];
+		}
+
+		if ( ! empty( $event['slack']['channel'] ) ) {
+			$payload['channel'] = $event['slack']['channel'];
+		}
+
+		// attach if setup
+		$arguments = array_filter( $arguments );
+
+		if ( ! empty( $arguments ) ) {
+			$fields = array();
+			foreach ( $arguments as $key => $value ) {
+				if ( is_array( $value ) || is_object( $value ) ) {
+					$value = json_encode( $value );
+				}
+				$fields[] = array(
+					'title' => __( 'Argument: ', 'event-notifier' ) . ' ' . ( $key + 1 ),
+					'value' => strip_tags( $value ),
+					'short' => ( strlen( $value ) < 100 ? true : false ),
+				);
+			}
+
+			$payload['attachments'] = array(
+				array(
+					'color'  => $event['slack']['color'],
+					'fields' => $fields,
+				),
+			);
+		}
+
+		if ( ! empty( $event['slack']['label'] ) ) {
+			$payload['text'] = $event['slack']['label'];
+		}
+
+		$args = array(
+			'body' => array(
+				'payload' => json_encode( $payload ),
+			),
+		);
+
+		$response = wp_remote_post( $event['slack']['url'], $args );
+
 	}
 }
