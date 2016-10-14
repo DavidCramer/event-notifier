@@ -83,23 +83,52 @@ class Event_Notifier {
 			$message[] = esc_html__( 'An Event Hook is required.', 'event-notifier' );
 		}
 		// check email enabled and has address
-		if ( ! empty( $data['notice']['enable'] ) ) {
-			if ( empty( $data['notice']['email'] ) || ! is_email( $data['notice']['email'] ) ) {
-				$message[] = esc_html__( 'A Valid Email address is required.', 'event-notifier' );
-			}
-		}
+		$message[] = $this->is_email_config_valid( $data );
+
 		// check slack enabled and has url
-		if ( ! empty( $data['slack']['enable'] ) ) {
-			if ( empty( $data['slack']['url'] ) || ! filter_var( $data['slack']['url'], FILTER_VALIDATE_URL ) ) {
-				$message[] = esc_html__( 'A Valid Webhook URL is required.', 'event-notifier' );
-			}
-		}
+		$message[] = $this->is_slack_config_valid( $data );
+
+		$message = array_filter( $message );
 
 		if ( ! empty( $message ) ) {
 			wp_send_json_error( implode( '<br>', $message ) );
 		}
 
 
+	}
+
+	/**
+	 * Verifies required fields are entered for email notification
+	 *
+	 * @since 1.0.0
+	 * @param array $event array config of event.
+	 * @return null|string
+	 */
+	public function is_email_config_valid( $data ) {
+		$message = null;
+		if ( ! empty( $data['notice']['enable'] ) ) {
+			if ( empty( $data['notice']['email'] ) || ! is_email( $data['notice']['email'] ) ) {
+				$message = esc_html__( 'A Valid Email address is required.', 'event-notifier' );
+			}
+		}
+		return $message;
+	}
+
+	/**
+	 * Verifies required fields are entered for Slack notification
+	 *
+	 * @since 1.0.0
+	 * @param array $event array config of event.
+	 * @return null|string
+	 */
+	public function is_slack_config_valid( $data ) {
+		$message = null;
+		if ( ! empty( $data['slack']['enable'] ) ) {
+			if ( empty( $data['slack']['url'] ) || ! filter_var( $data['slack']['url'], FILTER_VALIDATE_URL ) ) {
+				$message = esc_html__( 'A Valid Webhook URL is required.', 'event-notifier' );
+			}
+		}
+		return $message;
 	}
 
 	/**
