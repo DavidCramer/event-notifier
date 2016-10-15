@@ -125,7 +125,7 @@ body{
 
 
 .evenote-modal-content {
-    box-sizing: padding-box;
+    box-sizing: border-box;
     height: 100%;
 }
 
@@ -171,7 +171,7 @@ body{
     position: relative;
 }
 .evenote-modal-body .evenote-modal-sections {
-    box-sizing: padding-box;
+    box-sizing: border-box;
     height: 100%;
     overflow: auto;
     padding: 12px;
@@ -250,4 +250,51 @@ body{
     left: 12px;
     position: absolute;
     right: 12px;
+}
+.evenote-modal-body .notice, .evenote-modal-body div.error, .evenote-modal-body div.updated {
+    background: #fff none repeat scroll 0 0;
+    border-left: 4px solid #fff;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+    margin: 5px 15px 2px;
+    padding: 1px 12px;
+    border-left-color: #dc3232;
+}
+.evenote-modal-body .notice-error, .evenote-modal-body div.error {
+    border-left-color: #dc3232;
+}
+.evenote-modal-body .notice-dismiss::before {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    color: #b4b9be;
+    content: "";
+    display: block;
+    font: 400 16px/20px dashicons;
+    height: 20px;
+    text-align: center;
+    width: 20px;
+}
+.evenote-modal-body .notice-dismiss {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    color: #b4b9be;
+    cursor: pointer;
+    margin: 0;
+    padding: 9px;
+    position: absolute;
+    right: 1px;
+    top: 0;
+}
+.evenote-modal-body .screen-reader-text, .evenote-modal-body .screen-reader-text span, .evenote-modal-body .ui-helper-hidden-accessible {
+    border: 0 none;
+    clip: rect(0px, 0px, 0px, 0px);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    overflow-wrap: normal !important;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+.evenote-modal-body .notice p, .evenote-modal-body .notice-title, .evenote-modal-body div.error p, .evenote-modal-body div.updated p {
+    margin: 0.5em 0;
+    padding: 2px;
 }

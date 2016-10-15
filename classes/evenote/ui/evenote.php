@@ -326,7 +326,7 @@ abstract class evenote {
 	 */
 	protected function core_assets() {
 		wp_register_script( 'evenote', $this->url . 'assets/js/core' . EVENT_NOTIFY_ASSET_DEBUG . '.js' );
-		wp_register_style( 'evenote', $this->url . 'assets/css/core' . EVENT_NOTIFY_ASSET_DEBUG . '.css' );
+		wp_register_style( 'evenote', $this->url . 'assets/css/core' . EVENT_NOTIFY_ASSET_DEBUG . '.css', array( 'dashicons' ) );
 		// set assets . methods at before this point can set assets, after this not so much.
 		$this->set_assets();
 	}
