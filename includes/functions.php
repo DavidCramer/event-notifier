@@ -48,3 +48,14 @@ function evenote() {
 	// init UI
 	return \evenote\ui::get_instance( $request_data );
 }
+
+/**
+ * EVENT_NOTIFY Helper to minipulate the overall UI instance.
+ *
+ * @since 1.0.0
+ */
+function evenote_share() {
+	// init UI
+	return \evenote\share\share::get_instance();
+}
+

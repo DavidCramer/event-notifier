@@ -137,19 +137,17 @@ class toggle extends \evenote\ui\control {
 	 * @since 1.0.0
 	 * @access protected
 	 */
-	protected function enqueue_active_assets() {
-
-		echo '<style type="text/css">';
-
+	protected function set_active_styles() {
+		$style = null;
 		if ( ! empty( $this->struct['base_color'] ) ) {
-			echo '.' . $this->id() . ' > .evenote-control-input > .switch.active {background: ' . $this->struct['base_color'] . ';}';
+			$style .= '.' . $this->id() . ' > .evenote-control-input > .switch.active {background: ' . $this->struct['base_color'] . ';}';
 		}
 
 		if ( ! empty( $this->struct['off_color'] ) ) {
-			echo '.' . $this->id() . '> .evenote-control-input > .switch { background: ' . $this->struct['off_color'] . ';}';
+			$style .= '.' . $this->id() . '> .evenote-control-input > .switch { background: ' . $this->struct['off_color'] . ';}';
 		}
 
-		echo '</style>';
+		evenote_share()->set_active_styles( $style );
 
 	}
 

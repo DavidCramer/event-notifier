@@ -202,25 +202,23 @@ class page extends box implements \evenote\data\save {
 	 * @since 1.0.0
 	 * @access protected
 	 */
-	protected function enqueue_active_assets() {
+	protected function set_active_styles() {
 
-		parent::enqueue_active_assets();
+		$styles = '<style type="text/css">';
 
-		echo '<style type="text/css">';
+		$styles .= '.evenote-page #panel-' . $this->id() . ' > .evenote-panel-tabs > li[aria-selected="true"] a {box-shadow: 0 -3px 0 ' . $this->base_color() . ' inset;}';
+		$styles .= '.evenote-page #panel-' . $this->id() . '.evenote-top-tabs > .evenote-panel-tabs > li[aria-selected="true"] a {box-shadow: 0 3px 0 ' . $this->base_color() . ' inset;}';
 
-		echo '.evenote-page #panel-' . $this->id() . ' > .evenote-panel-tabs > li[aria-selected="true"] a {box-shadow: 0 -3px 0 ' . $this->base_color() . ' inset;}';
-		echo '.evenote-page #panel-' . $this->id() . '.evenote-top-tabs > .evenote-panel-tabs > li[aria-selected="true"] a {box-shadow: 0 3px 0 ' . $this->base_color() . ' inset;}';
-
-		echo '.contextual-help-tabs .active {border-left: 6px solid ' . $this->base_color() . ' !important;}';
-		echo '#' . $this->id() . '.evenote-page h1{box-shadow: 0 0 2px rgba(0, 2, 0, 0.1),11px 0 0 ' . $this->base_color() . ' inset;}';
-		echo '#' . $this->id() . '.evenote-page .page-title-action:hover{background: ' . $this->base_color() . ';border-color: rgba(0,0,0,0.1);}';
-		echo '#' . $this->id() . '.evenote-page .page-title-action:focus{box-shadow: 0 0 2px ' . $this->base_color() . ';border-color: ' . $this->base_color() . ';}';
+		$styles .= '.contextual-help-tabs .active {border-left: 6px solid ' . $this->base_color() . ' !important;}';
+		$styles .= '#' . $this->id() . '.evenote-page h1{box-shadow: 0 0 2px rgba(0, 2, 0, 0.1),11px 0 0 ' . $this->base_color() . ' inset;}';
+		$styles .= '#' . $this->id() . '.evenote-page .page-title-action:hover{background: ' . $this->base_color() . ';border-color: rgba(0,0,0,0.1);}';
+		$styles .= '#' . $this->id() . '.evenote-page .page-title-action:focus{box-shadow: 0 0 2px ' . $this->base_color() . ';border-color: ' . $this->base_color() . ';}';
 
 		if ( $this->child_count() > 1 ) {
-			echo '#' . $this->id() . '.evenote-page h1{ box-shadow: 0 0px 13px 12px ' . $this->base_color() . ', 11px 0 0 ' . $this->base_color() . ' inset;}';
+			$styles .= '#' . $this->id() . '.evenote-page h1{ box-shadow: 0 0px 13px 12px ' . $this->base_color() . ', 11px 0 0 ' . $this->base_color() . ' inset;}';
 		}
 
-		echo '</style>';
+		evenote_share()->set_active_styles( $styles );
 
 	}
 

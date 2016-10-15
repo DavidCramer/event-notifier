@@ -250,13 +250,13 @@ class modal extends panel {
 	 * @since 1.0.0
 	 * @access protected
 	 */
-	protected function enqueue_active_assets() {
-		echo '<style>';
-		echo 'h3#' . $this->id() . '_evenoteModalLable { background: ' . $this->base_color() . '; }';
-		echo '#' . $this->id() . '_evenoteModal.evenote-modal-wrap > .evenote-modal-body:after {background: url(' . $this->url . 'assets/svg/loading.php?base_color=' . urlencode( str_replace( '#', '', $this->base_color() ) ) . ') no-repeat center center;}';
-		echo '</style>';
+	protected function set_active_styles() {
 
-		parent::enqueue_active_assets();
+		$style = 'h3#' . $this->id() . '_evenoteModalLable { background: ' . $this->base_color() . '; }';
+		$style .= '#' . $this->id() . '_evenoteModal.evenote-modal-wrap > .evenote-modal-body:after {background: url(' . $this->url . 'assets/svg/loading.php?base_color=' . urlencode( str_replace( '#', '', $this->base_color() ) ) . ') no-repeat center center;}';
+
+		evenote_share()->set_active_styles( $style );
+		parent::set_active_styles();
 	}
 
 }

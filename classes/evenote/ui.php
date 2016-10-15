@@ -68,6 +68,8 @@ class ui{
 		 * @param ui $this Current instance of this class
 		 */
 		do_action( 'evenote_register', $this );
+		// init the share object
+		evenote_share();
 
 		// go over each locations
 		foreach ( $this->locations as $type => $paths ) {

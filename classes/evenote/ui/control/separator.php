@@ -56,21 +56,11 @@ class separator extends \evenote\ui\control {
 	 * @since 1.0.0
 	 * @access protected
 	 */
-	protected function enqueue_active_assets() {
-		parent::enqueue_active_assets();
-		?>
-		<style type="text/css">
-		#control-<?php echo $this->id(); ?> {
-			border-color: <?php echo $this->base_color(); ?>;
-		}
-
-		#
-		<?php echo $this->id(); ?>
-		span.evenote-control-label {
-			color: <?php echo $this->base_color(); ?>;
-		}
-		</style>
-		<?php
+	protected function set_active_styles() {
+		parent::set_active_styles();
+		$style = '#control-' . $this->id() . '{border-color: ' . $this->base_color() . ';}';
+		$style .= '#' . $this->id() . ' span.evenote-control-label {color: ' . $this->base_color() . ';}';
+		evenote_share()->set_active_styles( $style );
 	}
 
 }
