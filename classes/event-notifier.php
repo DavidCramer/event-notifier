@@ -170,16 +170,32 @@ class Event_Notifier {
 				'modal'       => array(
 					'id'          => 'about',
 					'label'       => __( 'About', 'event-notifier' ),
-					'description' => __( 'About Event Notifier', 'event-notifier' ),
+					'description' => __( 'About', 'event-notifier' ),
 					'width'       => 450,
 					'height'      => 570,
 					'attributes'  => array(
 						'class' => 'page-title-action',
 					),
-					'control'     => array(
-						'id'       => 'about_text',
-						'type'     => 'template',
-						'template' => EVENT_NOTIFY_PATH . 'includes/about-template.php',
+					'top_tabs' => true,
+					'section' => array(
+						'about' => array(
+							'label' => 'Event Notifier',
+							'control'     => array(
+								'about_text' => array(
+									'type'     => 'template',
+									'template' => EVENT_NOTIFY_PATH . 'includes/about-template.php',
+								),
+							),
+						),
+						'credits' => array(
+							'label' => 'Credits',
+							'control'     => array(
+								'about_text' => array(
+									'type'     => 'template',
+									'template' => EVENT_NOTIFY_PATH . 'includes/about-template.php',
+								),
+							),
+						),
 					),
 				),
 			),

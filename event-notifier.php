@@ -10,7 +10,7 @@
  * Plugin Name: Event Notifier
  * Plugin URI:  http://cramer.co.za
  * Description: Send notifications when WordPress hooks are fired.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      David Cramer
  * Author URI:  http://cramer.co.za
  * Text Domain: evenote-demo
@@ -28,7 +28,7 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'EVENT_NOTIFY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EVENT_NOTIFY_CORE', __FILE__ );
 define( 'EVENT_NOTIFY_URL', plugin_dir_url( __FILE__ ) );
-define( 'EVENT_NOTIFY_VER', '1.0.0' );
+define( 'EVENT_NOTIFY_VER', '1.0.1' );
 
 if ( ! version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
 	if ( is_admin() ) {

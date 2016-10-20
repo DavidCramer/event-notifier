@@ -3,7 +3,7 @@ Contributors: Desertsnowman
 Tags: event, hooks, notification, event notifications, slack notifications, slack
 Requires at least: 4.6.0
 Tested up to: 4.6.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,5 +32,9 @@ If you are a developer, implement your own hooks in your plugins so that you can
 none yet. feel free to ask.
 
 == Changelog ==
+
+= 1.0.1 - October 2016 =
+* fixed a issue that made a duplicate plugin show in the plugins list.
+
 = 1.0.0 - October 2016 =
 * Initial Release
