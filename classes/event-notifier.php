@@ -57,6 +57,15 @@ class Event_Notifier {
 	private $magic;
 
 	/**
+	 * Holds the current hook arguments being processed
+	 *
+	 * @since   1.0.2
+	 *
+	 * @var     array
+	 */
+	private $args;
+
+	/**
 	 * Event_Notifier constructor.
 	 */
 	public function __construct() {
@@ -71,6 +80,9 @@ class Event_Notifier {
 		add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard' ) );
 		// add ajax
 		add_action( 'wp_ajax_dashboard_notifications', array( $this, 'render_dashboard' ) );
+		// filter aguments
+		add_filter( 'caldera_magic_tag-args', array( $this, 'arguments_magic_tag' ) );
+
 	}
 
 	/**
@@ -380,6 +392,9 @@ class Event_Notifier {
 			if ( ! isset( $event['general']['recurrence'] ) ) {
 				$event['general']['recurrence'] = 1;
 			}
+			// set current arguments
+			$this->args = $arguments;
+
 			// recurrence
 			$history = $this->get_history( $event );
 			if ( count( $history ) < $event['general']['recurrence'] ) {
@@ -405,9 +420,27 @@ class Event_Notifier {
 	}
 
 	/**
+	 * adds arguments magic tag for message
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param array $event The event config to register
+	 *
+	 * @return the full history of the event.
+	 */
+	public function arguments_magic_tag( $params ) {
+
+		if ( isset( $this->args ) ) {
+			return $this->args[ $params ];
+		}
+
+		return $params;
+	}
+
+	/**
 	 * get the recurrence history of an event notification
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @param array $event The event config to register
 	 *
@@ -420,7 +453,7 @@ class Event_Notifier {
 		if ( empty( $history ) ) {
 			$history = array();
 		}
-		$line = date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), current_time( 'timestamp' ) ) . " -------\r\n";
+		$line = date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), current_time( 'timestamp' ) ) . "\r\n";
 		$line .= $this->magic->do_magic_tag( $event['general']['content'] );
 		$history[] = $line;
 		if ( count( $history ) >= $event['general']['recurrence'] ) {
@@ -532,7 +565,7 @@ class Event_Notifier {
 	/**
 	 * process dashboard notification
 	 *
-	 * @since 1.0.0
+	 * @since 1.2.0
 	 *
 	 * @param array $event The event config
 	 * @param array $arguments the event message will use
@@ -543,7 +576,6 @@ class Event_Notifier {
 		$log[] = array(
 			'event'   => $event['general']['event'],
 			'details' => $event['general']['content'],
-			'date'    => date( 'r', current_time( 'timestamp' ) ),
 		);
 		update_option( '_event_notifier_log', $log );
 
@@ -552,7 +584,7 @@ class Event_Notifier {
 	/**
 	 * render widget
 	 *
-	 * @since 1.0.2
+	 * @since 1.2.0
 	 *
 	 */
 	public function render_dashboard() {
@@ -577,14 +609,12 @@ class Event_Notifier {
 		echo '<thead><tr>';
 		echo '<th>' . __( 'Event', 'event-notifier' ) . '</th>';
 		echo '<th>' . __( 'Details', 'event-notifier' ) . '</th>';
-		echo '<th>' . __( 'Date', 'event-notifier' ) . '</th>';
 		echo '</tr></thead><tbody id="the-list">';
 		foreach ( $log as $entry ) {
 			echo '<tr>';
 
 			echo '<td>' . $entry['event'] . '</td>';
 			echo '<td>' . nl2br( $entry['details'] ) . '</td>';
-			echo '<td>' . $entry['date'] . '</td>';
 
 			echo '</tr>';
 		}
