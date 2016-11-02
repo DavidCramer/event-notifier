@@ -467,15 +467,8 @@ class Event_Notifier {
 		if ( empty( $event['notice']['subject'] ) ) {
 			$event['notice']['subject'] = __( 'Event Notifier', 'event-notifier' );
 		}
-		if ( empty( $event['general']['content'] ) ) {
-			$event['general']['content'] = '{{details}}';
-		}
 
-		//create a var_dump of the arguments passed.
-		ob_start();
-		var_dump( $arguments );
-		$message = str_replace( '{{details}}', ob_get_clean(), $event['notice']['message'] );
-		wp_mail( $event['notice']['email'], $event['notice']['subject'], $message );
+		wp_mail( $event['notice']['email'], $event['notice']['subject'], $event['general']['content'] );
 
 	}
 
@@ -509,38 +502,19 @@ class Event_Notifier {
 			$payload['channel'] = $event['slack']['channel'];
 		}
 
-		// attach if setup
-		$arguments = array_filter( $arguments );
-		if ( ! empty( $event['general']['content'] ) ) {
-			$message = $event['general']['content'];
-			if ( ! empty( $arguments ) ) {
-
-				foreach ( $arguments as $key => $value ) {
-					if ( is_array( $value ) || is_object( $value ) ) {
-						foreach ( $value as $val_key => $val_val ) {
-							if ( is_array( $val_val ) || is_object( $val_val ) ) {
-								$val_val = json_encode( $val_val );
-							}
-							$message = str_replace( '{{' . $val_key . '}}', $val_val, $message );
-						}
-						$value = json_encode( $value );
-					}
-					$message = str_replace( '{{' . $key . '}}', $value, $message );
-				}
-			}
-			$payload['attachments'] = array(
-				array(
-					'color'  => $event['slack']['color'],
-					'fields' => array(
-						array(
-							'title' => __( 'Message', 'event-notifier' ),
-							'value' => $this->magic->do_magic_tag( $message ),
-							'short' => false,
-						),
+		$payload['attachments'] = array(
+			array(
+				'color'  => $event['slack']['color'],
+				'fields' => array(
+					array(
+						'title' => __( 'Message', 'event-notifier' ),
+						'value' => $event['general']['content'],
+						'short' => false,
 					),
 				),
-			);
-		}
+			),
+		);
+
 		if ( ! empty( $event['slack']['label'] ) ) {
 			$payload['text'] .= ': ' . $event['slack']['label'];
 		}
