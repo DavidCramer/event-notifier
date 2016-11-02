@@ -259,17 +259,8 @@ class Event_Notifier {
 					),
 					'top_tabs'    => true,
 					'section'     => array(
-						'about'   => array(
+						'about' => array(
 							'label'   => 'Event Notifier',
-							'control' => array(
-								'about_text' => array(
-									'type'     => 'template',
-									'template' => EVENT_NOTIFY_PATH . 'includes/about-template.php',
-								),
-							),
-						),
-						'credits' => array(
-							'label'   => 'Credits',
 							'control' => array(
 								'about_text' => array(
 									'type'     => 'template',
@@ -385,6 +376,18 @@ class Event_Notifier {
 	public function __call( $name, $arguments ) {
 
 		foreach ( $this->events[ $name ] as $event ) {
+			// compatibility for before the recurrence was added
+			if ( ! isset( $event['general']['recurrence'] ) ) {
+				$event['general']['recurrence'] = 1;
+			}
+			// recurrence
+			$history = $this->get_history( $event );
+			if ( count( $history ) < $event['general']['recurrence'] ) {
+				continue;
+			}
+
+			$event['general']['content'] = implode( "\r\n------------------\r\n", $history );
+
 			if ( ! empty( $event['notice']['email'] ) && ! empty( $event['notice']['enable'] ) ) {
 				$this->do_email( $event, $arguments );
 			}
@@ -402,6 +405,34 @@ class Event_Notifier {
 	}
 
 	/**
+	 * get the recurrence history of an event notification
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $event The event config to register
+	 *
+	 * @return the full history of the event.
+	 */
+	public function get_history( $event ) {
+		// key of the setup
+		$key     = md5( json_encode( $event ) );
+		$history = get_transient( $key );
+		if ( empty( $history ) ) {
+			$history = array();
+		}
+		$line = date( get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' ), current_time( 'timestamp' ) ) . " -------\r\n";
+		$line .= $this->magic->do_magic_tag( $event['general']['content'] );
+		$history[] = $line;
+		if ( count( $history ) >= $event['general']['recurrence'] ) {
+			delete_transient( $key );
+		} else {
+			set_transient( $key, $history );
+		}
+
+		return $history;
+	}
+
+	/**
 	 * process email notification
 	 *
 	 * @since 1.0.0
@@ -410,15 +441,12 @@ class Event_Notifier {
 	 * @param array $arguments the event message will use
 	 */
 	public function do_email( $event, $arguments ) {
-		$message = '{{details}}';
+
 		if ( empty( $event['notice']['subject'] ) ) {
 			$event['notice']['subject'] = __( 'Event Notifier', 'event-notifier' );
 		}
-		if ( ! empty( $event['notice']['message'] ) ) {
-			$message = $event['notice']['message'];
-		}
-		if ( ! empty( $event['general']['content'] ) ) {
-			$message = $event['general']['content'];
+		if ( empty( $event['general']['content'] ) ) {
+			$event['general']['content'] = '{{details}}';
 		}
 
 		//create a var_dump of the arguments passed.
@@ -513,32 +541,12 @@ class Event_Notifier {
 
 		$log   = get_option( '_event_notifier_log', array() );
 		$log[] = array(
-			'event' => $event['general']['event'],
-			'ip'    => $this->get_ip(),
-			'date'  => date( 'r', current_time( 'timestamp' ) ),
+			'event'   => $event['general']['event'],
+			'details' => $event['general']['content'],
+			'date'    => date( 'r', current_time( 'timestamp' ) ),
 		);
 		update_option( '_event_notifier_log', $log );
 
-	}
-
-	/**
-	 * Gets the true IP address of the visitor
-	 *
-	 * @since 1.0.2
-	 *
-	 * @return string IP address of visitor
-	 */
-	private function get_ip() {
-
-		if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && filter_var( $_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP ) ) {
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-		} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && filter_var( $_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP ) ) {
-			$ip = $forward;
-		} else {
-			$ip = $_SERVER['REMOTE_ADDR'];
-		}
-
-		return $ip;
 	}
 
 	/**
@@ -568,14 +576,14 @@ class Event_Notifier {
 		echo '<table class="wp-list-table widefat striped">';
 		echo '<thead><tr>';
 		echo '<th>' . __( 'Event', 'event-notifier' ) . '</th>';
-		echo '<th>' . __( 'IP Address', 'event-notifier' ) . '</th>';
+		echo '<th>' . __( 'Details', 'event-notifier' ) . '</th>';
 		echo '<th>' . __( 'Date', 'event-notifier' ) . '</th>';
 		echo '</tr></thead><tbody id="the-list">';
 		foreach ( $log as $entry ) {
 			echo '<tr>';
 
 			echo '<td>' . $entry['event'] . '</td>';
-			echo '<td>' . $entry['ip'] . '</td>';
+			echo '<td>' . nl2br( $entry['details'] ) . '</td>';
 			echo '<td>' . $entry['date'] . '</td>';
 
 			echo '</tr>';

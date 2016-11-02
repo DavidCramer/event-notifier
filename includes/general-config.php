@@ -44,7 +44,7 @@ return array(
 								'description' => __( 'The content to send. Magic tags enabled.', 'event-notifier' ) . ' <br><a target="_blank" href="https://github.com/Desertsnowman/magic-tags">https://github.com/Desertsnowman/magic-tags</a>',
 								'type'        => 'textarea',
 								'rows'        => 6,
-								'value'       => __( 'Event Notification Details: {{details}}', 'event-notifier' ),
+								'value'       => __( 'Event Called', 'event-notifier' ),
 							),
 							'recurrence'  => array(
 								'label'       => __( 'Recurrence', 'event-notifier' ),

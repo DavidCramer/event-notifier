@@ -12,6 +12,10 @@
 return array(
 	'label'   => __( 'Dashboard', 'event-notifier' ),
 	'control' => array(
+		'info'   => array(
+			'type'     => 'template',
+			'template' => EVENT_NOTIFY_PATH . 'includes/dashboard-help.php',
+		),
 		'enable' => array(
 			'label'    => __( 'Enabled', 'event-notifier' ),
 			'type'     => 'toggle',
