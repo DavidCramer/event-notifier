@@ -128,9 +128,8 @@ class Event_Notifier {
 	 *
 	 * @since 1.0.2
 	 *
-	 * @param array $widget config of widget
 	 */
-	public function dashboard( $null ) {
+	public function dashboard() {
 		echo '<style>#event_notifier_dashboard_form > div.loading {opacity: 0.6;}</style><form data-before="evenote_pre_dashboard_log" id="event_notifier_dashboard_form" method="POST"class="baldrick" data-request="' . esc_attr( admin_url( 'admin-ajax.php' ) ) . '" data-poll="15000" data-action="dashboard_notifications" data-target="#event_notifier_dashboard" data-autoload="true">';
 		echo '<div id="event_notifier_dashboard"></div>';
 		echo '<label style="display: inline-block; margin: 2px 0px 0px;"><input type="checkbox" name="full" value="1" data-for="#event_notifier_dashboard_form" data-event="change"> ' . __( 'Full List', 'event-notifier' ) . '</label>';
@@ -193,10 +192,10 @@ class Event_Notifier {
 	 *
 	 * @return null|string
 	 */
-	public function is_email_config_valid( $data ) {
+	public function is_email_config_valid( $event ) {
 		$message = null;
-		if ( ! empty( $data['notice']['enable'] ) ) {
-			if ( empty( $data['notice']['email'] ) || ! is_email( $data['notice']['email'] ) ) {
+		if ( ! empty( $event['notice']['enable'] ) ) {
+			if ( empty( $event['notice']['email'] ) || ! is_email( $event['notice']['email'] ) ) {
 				$message = esc_html__( 'A Valid Email address is required.', 'event-notifier' );
 			}
 		}
@@ -388,10 +387,7 @@ class Event_Notifier {
 	public function __call( $name, $arguments ) {
 
 		foreach ( $this->events[ $name ] as $event ) {
-			// compatibility for before the recurrence was added
-			if ( ! isset( $event['general']['recurrence'] ) ) {
-				$event['general']['recurrence'] = 1;
-			}
+
 			// set current arguments
 			$this->args = $arguments;
 
@@ -403,15 +399,9 @@ class Event_Notifier {
 
 			$event['general']['content'] = implode( "\r\n------------------\r\n", $history );
 
-			if ( ! empty( $event['notice']['email'] ) && ! empty( $event['notice']['enable'] ) ) {
-				$this->do_email( $event, $arguments );
-			}
-			if ( ! empty( $event['slack']['url'] ) && ! empty( $event['slack']['enable'] ) ) {
-				$this->do_slack( $event, $arguments );
-			}
-			if ( ! empty( $event['dashboard']['enable'] ) ) {
-				$this->do_dashboard( $event, $arguments );
-			}
+			$this->do_email( $event, $arguments );
+			$this->do_slack( $event, $arguments );
+			$this->do_dashboard( $event, $arguments );
 		}
 		// return back to filter
 		if ( isset( $arguments[0] ) ) {
@@ -420,13 +410,13 @@ class Event_Notifier {
 	}
 
 	/**
-	 * adds arguments magic tag for message
+	 * convert arguments.
 	 *
 	 * @since 1.1.0
 	 *
-	 * @param array $event The event config to register
+	 * @param string $params The param tag to be converted
 	 *
-	 * @return the full history of the event.
+	 * @return string The converted string.
 	 */
 	public function arguments_magic_tag( $params ) {
 
@@ -447,6 +437,11 @@ class Event_Notifier {
 	 * @return the full history of the event.
 	 */
 	public function get_history( $event ) {
+		// compatibility for before the recurrence was added
+		if ( ! isset( $event['general']['recurrence'] ) ) {
+			$event['general']['recurrence'] = 1;
+		}
+
 		// key of the setup
 		$key     = md5( json_encode( $event ) );
 		$history = get_transient( $key );
@@ -474,6 +469,9 @@ class Event_Notifier {
 	 * @param array $arguments the event message will use
 	 */
 	public function do_email( $event, $arguments ) {
+		if ( empty( $event['notice']['email'] ) || empty( $event['notice']['enable'] ) ) {
+			return;
+		}
 
 		if ( empty( $event['notice']['subject'] ) ) {
 			$event['notice']['subject'] = __( 'Event Notifier', 'event-notifier' );
@@ -500,6 +498,10 @@ class Event_Notifier {
 	 */
 	public function do_slack( $event, $arguments ) {
 
+		if ( empty( $event['slack']['url'] ) || empty( $event['slack']['enable'] ) ) {
+			return;
+		}
+
 		$payload = array(
 			'text' => $event['general']['event'],
 		);
@@ -521,7 +523,7 @@ class Event_Notifier {
 		if ( ! empty( $event['general']['content'] ) ) {
 			$message = $event['general']['content'];
 			if ( ! empty( $arguments ) ) {
-				$fields = array();
+
 				foreach ( $arguments as $key => $value ) {
 					if ( is_array( $value ) || is_object( $value ) ) {
 						foreach ( $value as $val_key => $val_val ) {
@@ -571,7 +573,9 @@ class Event_Notifier {
 	 * @param array $arguments the event message will use
 	 */
 	public function do_dashboard( $event, $arguments ) {
-
+		if ( empty( $event['dashboard']['enable'] ) ) {
+			return;
+		}
 		$log   = get_option( '_event_notifier_log', array() );
 		$log[] = array(
 			'event'   => $event['general']['event'],
