@@ -385,28 +385,19 @@ class Event_Notifier {
 	 * @param array $arguments , the arguments being passed to the hook
 	 */
 	public function __call( $name, $arguments ) {
-
 		foreach ( $this->events[ $name ] as $event ) {
-
 			// set current arguments
 			$this->args = $arguments;
-
 			// recurrence
 			$history = $this->get_history( $event );
-			if ( count( $history ) < $event['general']['recurrence'] ) {
-				continue;
+			if ( count( $history ) > $event['general']['recurrence'] ) {
+				$event['general']['content'] = implode( "\r\n------------------\r\n", $history );
+				$this->do_email( $event, $arguments );
+				$this->do_slack( $event, $arguments );
+				$this->do_dashboard( $event, $arguments );
 			}
-
-			$event['general']['content'] = implode( "\r\n------------------\r\n", $history );
-
-			$this->do_email( $event, $arguments );
-			$this->do_slack( $event, $arguments );
-			$this->do_dashboard( $event, $arguments );
 		}
-		// return back to filter
-		if ( isset( $arguments[0] ) ) {
-			return $arguments[0];
-		}
+		return array_shift( $arguments );
 	}
 
 	/**
