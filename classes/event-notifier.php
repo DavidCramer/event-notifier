@@ -244,7 +244,7 @@ class Event_Notifier {
 		$structure = array(
 			'page_title' => __( 'Event Notifier Admin', 'event-notifier' ),
 			'menu_title' => __( 'Event Notifier', 'event-notifier' ),
-			'base_color' => '#D81B60',
+			'base_color' => '#E91E63',
 			'parent'     => 'tools.php',
 			'full_width' => true,
 			'attributes' => array(
@@ -253,7 +253,7 @@ class Event_Notifier {
 			'header'     => array(
 				'id'          => 'admin_header',
 				'label'       => __( 'Event Notifier', 'event-notifier' ),
-				'description' => __( '1.0.0', 'event-notifier' ),
+				'description' => EVENT_NOTIFY_VER,
 				'control'     => array(
 					array(
 						'type' => 'separator',
@@ -261,6 +261,7 @@ class Event_Notifier {
 				),
 				'modal'       => array(
 					'id'          => 'about',
+					'base_color' => '#3d7fa3',
 					'label'       => __( 'About', 'event-notifier' ),
 					'description' => __( 'About', 'event-notifier' ),
 					'width'       => 450,
@@ -288,19 +289,20 @@ class Event_Notifier {
 			'section'    => array(
 				'id'      => 'event',
 				'control' => array(
-					'id'     => 'config',
-					'type'   => 'item',
-					'config' => array(
+					'id'         => 'config',
+					'type'       => 'item',
+					'base_color' => '#7CB342',
+					'config'     => array(
 						'label'       => __( 'Create New Notifier', 'event-notifier' ),
 						'description' => __( 'Configure Event Notification', 'event-notifier' ),
-						'width'       => 500,
+						'width'       => 680,
 						'height'      => 580,
 						'template'    => EVENT_NOTIFY_PATH . 'includes/admin-template.php',
 						'top_tabs'    => true,
 						'section'     => array(
 							'general'   => include EVENT_NOTIFY_PATH . 'includes/general-config.php',
-							'notice'    => include EVENT_NOTIFY_PATH . 'includes/email-config.php',
 							'dashboard' => include EVENT_NOTIFY_PATH . 'includes/dashboard-config.php',
+							'notice'    => include EVENT_NOTIFY_PATH . 'includes/email-config.php',
 							'slack'     => include EVENT_NOTIFY_PATH . 'includes/slack-config.php',
 						),
 						'footer'      => array(
@@ -392,30 +394,13 @@ class Event_Notifier {
 			$history = $this->get_history( $event );
 			if ( empty( $event['general']['recurrence'] ) || count( $history ) >= $event['general']['recurrence'] ) {
 				$event['general']['content'] = implode( "\r\n------------------\r\n", $history );
-				$this->do_email( $event, $arguments );
-				$this->do_slack( $event, $arguments );
-				$this->do_dashboard( $event, $arguments );
+				$this->do_email( $event );
+				$this->do_slack( $event );
+				$this->do_dashboard( $event );
 			}
 		}
+
 		return array_shift( $arguments );
-	}
-
-	/**
-	 * convert arguments.
-	 *
-	 * @since 1.1.0
-	 *
-	 * @param string $params The param tag to be converted
-	 *
-	 * @return string The converted string.
-	 */
-	public function arguments_magic_tag( $params ) {
-
-		if ( isset( $this->args ) ) {
-			return $this->args[ $params ];
-		}
-
-		return $params;
 	}
 
 	/**
@@ -457,9 +442,8 @@ class Event_Notifier {
 	 * @since 1.0.0
 	 *
 	 * @param array $event The event config
-	 * @param array $arguments the event message will use
 	 */
-	public function do_email( $event, $arguments ) {
+	public function do_email( $event ) {
 		if ( empty( $event['notice']['email'] ) || empty( $event['notice']['enable'] ) ) {
 			return;
 		}
@@ -478,9 +462,8 @@ class Event_Notifier {
 	 * @since 1.0.0
 	 *
 	 * @param array $event The event config
-	 * @param array $arguments the event message will use
 	 */
-	public function do_slack( $event, $arguments ) {
+	public function do_slack( $event ) {
 
 		if ( empty( $event['slack']['url'] ) || empty( $event['slack']['enable'] ) ) {
 			return;
@@ -535,9 +518,8 @@ class Event_Notifier {
 	 * @since 1.2.0
 	 *
 	 * @param array $event The event config
-	 * @param array $arguments the event message will use
 	 */
-	public function do_dashboard( $event, $arguments ) {
+	public function do_dashboard( $event ) {
 		if ( empty( $event['dashboard']['enable'] ) ) {
 			return;
 		}
@@ -548,6 +530,24 @@ class Event_Notifier {
 		);
 		update_option( '_event_notifier_log', $log );
 
+	}
+
+	/**
+	 * convert arguments.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string $params The param tag to be converted
+	 *
+	 * @return string The converted string.
+	 */
+	public function arguments_magic_tag( $params ) {
+
+		if ( isset( $this->args ) ) {
+			return $this->args[ $params ];
+		}
+
+		return $params;
 	}
 
 	/**

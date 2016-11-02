@@ -37,6 +37,7 @@ none yet. feel free to ask.
 * Added Dashboard Notification. Adds a dashboard widget with a live feed of events.
 * Added Recurrence option. Notifications now only send when the hook has fired the set amount.
 * Added Content and Magic Tags. Added a content to allow setting the content to send, with magic tags to capture and send data at time of event.
+* Added More Colorful Modals!
 
 = 1.0.1 - October 2016 =
 * fixed a issue that made a duplicate plugin show in the plugins list.
