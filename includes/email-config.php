@@ -17,23 +17,12 @@ return array(
 			array(
 				'column' => array(
 					array(
-						'size'    => 'col-xs-6',
+						'size'    => 'col-xs-12',
 						'control' => array(
 							'email'   => array(
 								'label'       => __( 'Email Address', 'event-notifier' ),
 								'description' => __( 'The email address of to send details to.', 'event-notifier' ),
 								'type'        => 'text',
-							),
-						),
-					),
-					array(
-						'size'    => 'col-xs-6',
-						'control' => array(
-							'subject' => array(
-								'label'       => __( 'Email Subject', 'event-notifier' ),
-								'description' => __( 'The subject of the notification email.', 'event-notifier' ),
-								'type'        => 'text',
-								'value'       => __( 'Event Notification', 'event-notifier' ),
 							),
 						),
 					),
@@ -44,12 +33,11 @@ return array(
 					array(
 						'size'    => 'col-xs-12',
 						'control' => array(
-							'message' => array(
-								'label'       => __( 'Email Message', 'event-notifier' ),
-								'description' => __( 'Content of the notification.', 'event-notifier' ),
-								'type'        => 'textarea',
-								'rows'        => 6,
-								'value'       => __( 'Event Notification Details: {{details}}', 'event-notifier' ),
+							'subject' => array(
+								'label'       => __( 'Email Subject', 'event-notifier' ),
+								'description' => __( 'The subject of the notification email.', 'event-notifier' ),
+								'type'        => 'text',
+								'value'       => __( 'Event Notification', 'event-notifier' ),
 							),
 							'enable' => array(
 								'label'    => __( 'Enable Email Notifications', 'event-notifier' ),
@@ -60,6 +48,7 @@ return array(
 					),
 				),
 			),
+
 		),
 	),
 );

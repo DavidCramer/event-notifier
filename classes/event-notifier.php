@@ -25,7 +25,7 @@ class Event_Notifier {
 	 *
 	 * @since   1.0.0
 	 *
-	 * @var     \evenote\ui\page
+	 * @var     \uix\ui\page
 	 */
 	private $admin_page;
 
@@ -39,6 +39,24 @@ class Event_Notifier {
 	private $events = array();
 
 	/**
+	 * Flag to determine if dashboard widget is active
+	 *
+	 * @since   1.0.2
+	 *
+	 * @var     bool
+	 */
+	private $dashboard = false;
+
+	/**
+	 * Holds the magic tags object
+	 *
+	 * @since   1.0.2
+	 *
+	 * @var     \evenote\magictag
+	 */
+	private $magic;
+
+	/**
 	 * Event_Notifier constructor.
 	 */
 	public function __construct() {
@@ -49,6 +67,10 @@ class Event_Notifier {
 		add_action( 'init', array( $this, 'setup' ) );
 		// add required fields check
 		add_action( 'evenote_control_item_submit_config', array( $this, 'verify_config' ) );
+		// add dashboard setup
+		add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard' ) );
+		// add ajax
+		add_action( 'wp_ajax_dashboard_notifications', array( $this, 'render_dashboard' ) );
 	}
 
 	/**
@@ -67,6 +89,59 @@ class Event_Notifier {
 
 		return self::$instance;
 
+	}
+
+	/**
+	 * Registered the dashboard metabox if notifiers are set for it.
+	 *
+	 * @since 1.0.0
+	 *
+	 */
+	public function register_dashboard() {
+		if ( true === $this->dashboard ) {
+			// enqueu baldrick
+			wp_enqueue_script( 'baldrick', EVENT_NOTIFY_URL . 'assets/js/jquery.baldrick.min.js', array( 'jquery' ) );
+
+			// if has dashboard
+			wp_add_dashboard_widget(
+				'event_notifier',
+				__( 'Event Notifier', 'event-notifier' ),
+				array( $this, 'dashboard' )
+			);
+		}
+	}
+
+	/**
+	 * render widget
+	 *
+	 * @since 1.0.2
+	 *
+	 * @param array $widget config of widget
+	 */
+	public function dashboard( $null ) {
+		echo '<style>#event_notifier_dashboard_form > div.loading {opacity: 0.6;}</style><form data-before="evenote_pre_dashboard_log" id="event_notifier_dashboard_form" method="POST"class="baldrick" data-request="' . esc_attr( admin_url( 'admin-ajax.php' ) ) . '" data-poll="15000" data-action="dashboard_notifications" data-target="#event_notifier_dashboard" data-autoload="true">';
+		echo '<div id="event_notifier_dashboard"></div>';
+		echo '<label style="display: inline-block; margin: 2px 0px 0px;"><input type="checkbox" name="full" value="1" data-for="#event_notifier_dashboard_form" data-event="change"> ' . __( 'Full List', 'event-notifier' ) . '</label>';
+		echo '<input type="submit" name="clear" class="button button-small clear-log" style="float: right; margin-top:3px; margin-left: 6px;" value="' . esc_attr__( 'Clear Log', 'event-notifier' ) . '">';
+		echo '<button type="submit" class="button button-small" style="float: right; margin-top:3px;">' . __( 'Refresh', 'event-notifier' ) . '</button>';
+		echo '</form>';
+		?>
+		<script>
+			function evenote_pre_dashboard_log(el, ev) {
+				jQuery(el).removeData('clear');
+				if (ev.originalEvent) {
+					if (jQuery(ev.originalEvent.explicitOriginalTarget).hasClass('clear-log')) {
+						if (confirm("<?php esc_attr_e( 'Are you sure you want to clear the logs?', 'event-notifier' ); ?>")) {
+							jQuery(el).data('clear', true);
+						} else {
+							ev.preventDefault();
+							return false;
+						}
+					}
+				}
+			}
+		</script>
+		<?php
 	}
 
 	/**
@@ -101,7 +176,9 @@ class Event_Notifier {
 	 * Verifies required fields are entered for email notification
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $event array config of event.
+	 *
 	 * @return null|string
 	 */
 	public function is_email_config_valid( $data ) {
@@ -111,6 +188,7 @@ class Event_Notifier {
 				$message = esc_html__( 'A Valid Email address is required.', 'event-notifier' );
 			}
 		}
+
 		return $message;
 	}
 
@@ -118,7 +196,9 @@ class Event_Notifier {
 	 * Verifies required fields are entered for Slack notification
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $event array config of event.
+	 *
 	 * @return null|string
 	 */
 	public function is_slack_config_valid( $data ) {
@@ -128,6 +208,7 @@ class Event_Notifier {
 				$message = esc_html__( 'A Valid Webhook URL is required.', 'event-notifier' );
 			}
 		}
+
 		return $message;
 	}
 
@@ -176,11 +257,11 @@ class Event_Notifier {
 					'attributes'  => array(
 						'class' => 'page-title-action',
 					),
-					'top_tabs' => true,
-					'section' => array(
-						'about' => array(
-							'label' => 'Event Notifier',
-							'control'     => array(
+					'top_tabs'    => true,
+					'section'     => array(
+						'about'   => array(
+							'label'   => 'Event Notifier',
+							'control' => array(
 								'about_text' => array(
 									'type'     => 'template',
 									'template' => EVENT_NOTIFY_PATH . 'includes/about-template.php',
@@ -188,8 +269,8 @@ class Event_Notifier {
 							),
 						),
 						'credits' => array(
-							'label' => 'Credits',
-							'control'     => array(
+							'label'   => 'Credits',
+							'control' => array(
 								'about_text' => array(
 									'type'     => 'template',
 									'template' => EVENT_NOTIFY_PATH . 'includes/about-template.php',
@@ -215,9 +296,10 @@ class Event_Notifier {
 						'template'    => EVENT_NOTIFY_PATH . 'includes/admin-template.php',
 						'top_tabs'    => true,
 						'section'     => array(
-							'general' => include EVENT_NOTIFY_PATH . 'includes/general-config.php',
-							'notice'  => include EVENT_NOTIFY_PATH . 'includes/email-config.php',
-							'slack'   => include EVENT_NOTIFY_PATH . 'includes/slack-config.php',
+							'general'   => include EVENT_NOTIFY_PATH . 'includes/general-config.php',
+							'notice'    => include EVENT_NOTIFY_PATH . 'includes/email-config.php',
+							'dashboard' => include EVENT_NOTIFY_PATH . 'includes/dashboard-config.php',
+							'slack'     => include EVENT_NOTIFY_PATH . 'includes/slack-config.php',
 						),
 						'footer'      => array(
 							'id'      => 'status',
@@ -258,10 +340,18 @@ class Event_Notifier {
 		$data   = $this->admin_page->load_data();
 		$config = json_decode( $data['event']['config'], ARRAY_A );
 		if ( ! empty( $config ) ) {
+			// init magictag
+			$this->magic = new \evenote\magictag();
+
 			foreach ( $config as $event ) {
 				$this->register_notification( $event );
+				// is this a dashboard notifier
+				if ( ! empty( $event['dashboard']['enable'] ) ) {
+					$this->dashboard = true;
+				}
 			}
 		}
+
 	}
 
 	/**
@@ -281,6 +371,7 @@ class Event_Notifier {
 
 		// set args to 10 but might need more to be safe. perhaps a setting would be wise.
 		add_action( $event['general']['event'], array( $this, $event['general']['event'] ), 1000, 10 );
+
 	}
 
 	/**
@@ -300,6 +391,13 @@ class Event_Notifier {
 			if ( ! empty( $event['slack']['url'] ) && ! empty( $event['slack']['enable'] ) ) {
 				$this->do_slack( $event, $arguments );
 			}
+			if ( ! empty( $event['dashboard']['enable'] ) ) {
+				$this->do_dashboard( $event, $arguments );
+			}
+		}
+		// return back to filter
+		if ( isset( $arguments[0] ) ) {
+			return $arguments[0];
 		}
 	}
 
@@ -312,12 +410,17 @@ class Event_Notifier {
 	 * @param array $arguments the event message will use
 	 */
 	public function do_email( $event, $arguments ) {
+		$message = '{{details}}';
 		if ( empty( $event['notice']['subject'] ) ) {
 			$event['notice']['subject'] = __( 'Event Notifier', 'event-notifier' );
 		}
-		if ( empty( $event['notice']['message'] ) ) {
-			$event['notice']['message'] = '{{details}}';
+		if ( ! empty( $event['notice']['message'] ) ) {
+			$message = $event['notice']['message'];
 		}
+		if ( ! empty( $event['general']['content'] ) ) {
+			$message = $event['general']['content'];
+		}
+
 		//create a var_dump of the arguments passed.
 		ob_start();
 		var_dump( $arguments );
@@ -354,28 +457,36 @@ class Event_Notifier {
 
 		// attach if setup
 		$arguments = array_filter( $arguments );
-
-		if ( ! empty( $arguments ) ) {
-			$fields = array();
-			foreach ( $arguments as $key => $value ) {
-				if ( is_array( $value ) || is_object( $value ) ) {
-					$value = json_encode( $value );
+		if ( ! empty( $event['general']['content'] ) ) {
+			$message = $event['general']['content'];
+			if ( ! empty( $arguments ) ) {
+				$fields = array();
+				foreach ( $arguments as $key => $value ) {
+					if ( is_array( $value ) || is_object( $value ) ) {
+						foreach ( $value as $val_key => $val_val ) {
+							if ( is_array( $val_val ) || is_object( $val_val ) ) {
+								$val_val = json_encode( $val_val );
+							}
+							$message = str_replace( '{{' . $val_key . '}}', $val_val, $message );
+						}
+						$value = json_encode( $value );
+					}
+					$message = str_replace( '{{' . $key . '}}', $value, $message );
 				}
-				$fields[] = array(
-					'title' => __( 'Argument: ', 'event-notifier' ) . ' ' . ( $key + 1 ),
-					'value' => strip_tags( $value ),
-					'short' => ( strlen( $value ) < 100 ? true : false ),
-				);
 			}
-
 			$payload['attachments'] = array(
 				array(
 					'color'  => $event['slack']['color'],
-					'fields' => $fields,
+					'fields' => array(
+						array(
+							'title' => __( 'Message', 'event-notifier' ),
+							'value' => $this->magic->do_magic_tag( $message ),
+							'short' => false,
+						),
+					),
 				),
 			);
 		}
-
 		if ( ! empty( $event['slack']['label'] ) ) {
 			$payload['text'] = $event['slack']['label'];
 		}
@@ -389,6 +500,91 @@ class Event_Notifier {
 		$response = wp_remote_post( $event['slack']['url'], $args );
 
 	}
+
+	/**
+	 * process dashboard notification
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $event The event config
+	 * @param array $arguments the event message will use
+	 */
+	public function do_dashboard( $event, $arguments ) {
+
+		$log   = get_option( '_event_notifier_log', array() );
+		$log[] = array(
+			'event' => $event['general']['event'],
+			'ip'    => $this->get_ip(),
+			'date'  => date( 'r', current_time( 'timestamp' ) ),
+		);
+		update_option( '_event_notifier_log', $log );
+
+	}
+
+	/**
+	 * Gets the true IP address of the visitor
+	 *
+	 * @since 1.0.2
+	 *
+	 * @return string IP address of visitor
+	 */
+	private function get_ip() {
+
+		if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && filter_var( $_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP ) ) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && filter_var( $_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP ) ) {
+			$ip = $forward;
+		} else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+
+		return $ip;
+	}
+
+	/**
+	 * render widget
+	 *
+	 * @since 1.0.2
+	 *
+	 */
+	public function render_dashboard() {
+
+		if ( ! empty( $_POST['clear'] ) ) {
+			delete_option( '_event_notifier_log' );
+		}
+
+		$log = get_option( '_event_notifier_log', array() );
+		if ( empty( $log ) ) {
+			echo '<p class="description" style="background: #f6f6f6 none repeat scroll 0 0;margin: -11px -12px 6px;padding: 12px;border-bottom:1px solid #efefef;">' . esc_html__( 'Event Log is empty', 'event-notifier' ) . '</p>';
+			exit;
+		}
+		$log = array_reverse( $log );
+
+		if ( empty( $_POST['full'] ) ) {
+			$log = array_chunk( $log, 10 );
+			$log = $log[0];
+		}
+
+		echo '<table class="wp-list-table widefat striped">';
+		echo '<thead><tr>';
+		echo '<th>' . __( 'Event', 'event-notifier' ) . '</th>';
+		echo '<th>' . __( 'IP Address', 'event-notifier' ) . '</th>';
+		echo '<th>' . __( 'Date', 'event-notifier' ) . '</th>';
+		echo '</tr></thead><tbody id="the-list">';
+		foreach ( $log as $entry ) {
+			echo '<tr>';
+
+			echo '<td>' . $entry['event'] . '</td>';
+			echo '<td>' . $entry['ip'] . '</td>';
+			echo '<td>' . $entry['date'] . '</td>';
+
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+
+		exit;
+	}
 }
+
 // init
 Event_Notifier::init();

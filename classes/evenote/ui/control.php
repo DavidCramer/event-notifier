@@ -224,7 +224,7 @@ class control extends \evenote\data\data {
 	public function description() {
 		$output = null;
 		if ( isset( $this->struct['description'] ) ) {
-			$output .= '<span class="evenote-control-description">' . esc_html( $this->struct['description'] ) . '</span>';
+			$output .= '<span class="evenote-control-description">' . strip_tags( $this->struct['description'], '<a><br>' ) . '</span>';
 		}
 
 		return $output;

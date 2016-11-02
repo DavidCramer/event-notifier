@@ -24,12 +24,23 @@
 	<label><?php echo esc_html__( 'Slack', 'event-notifier' ); ?></label>
 	<div class="def-row">
 		{{#if slack/enable}}
-			<strong style="color:#8bc34a;"><span class="dashicons dashicons-yes"></span> <?php echo esc_html__( 'Enabled', 'event-notifier' ); ?>
+		<strong style="color:#8bc34a;"><span class="dashicons dashicons-yes"></span> <?php echo esc_html__( 'Enabled', 'event-notifier' ); ?>
 			{{else}}
 			<strong style="color:#b71c1c;"><span class="dashicons dashicons-no"></span> <?php echo esc_html__( 'Disabled', 'event-notifier' ); ?>
-			{{/if}}
+				{{/if}}
 			</strong>
 			<span class="evenote-mute" title="{{#if slack/channel}}{{slack/channel}}{{else}}{{slack/url}}{{/if}}">{{#if slack/channel}}{{slack/channel}}{{else}}{{slack/url}}{{/if}}</span>
+	</div>
+
+	<label><?php echo esc_html__( 'Dashboard', 'event-notifier' ); ?></label>
+	<div class="def-row">
+		{{#if dashboard/enable}}
+		<strong style="color:#8bc34a;"><span class="dashicons dashicons-yes"></span> <?php echo esc_html__( 'Enabled', 'event-notifier' ); ?>
+			{{else}}
+			<strong style="color:#b71c1c;"><span class="dashicons dashicons-no"></span> <?php echo esc_html__( 'Disabled', 'event-notifier' ); ?>
+				{{/if}}
+			</strong>
+			<span class="evenote-mute" title="<?php echo esc_attr__( 'Dashboard', 'event-notifier' ); ?>">{{#if dashboard/enable}}<?php echo esc_attr__( 'Dashboard Log', 'event-notifier' ); ?>{{/if}}</span>
 	</div>
 
 </div>
