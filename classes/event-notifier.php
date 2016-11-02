@@ -390,7 +390,7 @@ class Event_Notifier {
 			$this->args = $arguments;
 			// recurrence
 			$history = $this->get_history( $event );
-			if ( count( $history ) > $event['general']['recurrence'] ) {
+			if ( empty( $event['general']['recurrence'] ) || count( $history ) >= $event['general']['recurrence'] ) {
 				$event['general']['content'] = implode( "\r\n------------------\r\n", $history );
 				$this->do_email( $event, $arguments );
 				$this->do_slack( $event, $arguments );
@@ -542,7 +542,7 @@ class Event_Notifier {
 			);
 		}
 		if ( ! empty( $event['slack']['label'] ) ) {
-			$payload['text'] = $event['slack']['label'];
+			$payload['text'] .= ': ' . $event['slack']['label'];
 		}
 
 		$args = array(
