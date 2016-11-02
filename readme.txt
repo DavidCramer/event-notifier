@@ -31,6 +31,16 @@ If you are a developer, implement your own hooks in your plugins so that you can
 == Frequently Asked Questions ==
 none yet. feel free to ask.
 
+== Screenshots ==
+
+1. Main Admin Screen
+
+2. General Settings of an Event Notifier
+
+3. Slack Integration built in.
+
+4. Live (ish) Dashboard option to log most recent events.
+
 == Changelog ==
 
 = 1.2.0 - November 2016 =
