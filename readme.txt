@@ -3,7 +3,7 @@ Contributors: Desertsnowman
 Tags: event, hooks, notification, event notifications, slack notifications, slack
 Requires at least: 4.6.0
 Tested up to: 4.7
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,9 @@ none yet. feel free to ask.
 4. Live (ish) Dashboard option to log most recent events.
 
 == Changelog ==
+
+= 1.2.1 - January 2017 =
+* Fixed a Cross-Site Scripting vulnerability on the loading animation.
 
 = 1.2.0 - November 2016 =
 * Added Dashboard Notification. Adds a dashboard widget with a live feed of events.
